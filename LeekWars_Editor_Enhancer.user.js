@@ -4,7 +4,7 @@
 // @description Enhance LeekWars editor
 // @include     http://leekwars.com/editor*
 // @author			Foudge
-// @version     0.1
+// @version     0.1.1
 // @grant       GM_addStyle
 // ==/UserScript==
 
@@ -23,7 +23,7 @@ function setDropDownStyles(select)
                             );
   }
   //add or modify 2 styles
-  select.style.setProperty('min-width', '160px', null);
+  select.style.setProperty('min-width', '120px', null);
   select.style.setProperty('width', 'auto', null);
   select.style.setProperty('text-align', 'left', null);
 }
@@ -98,9 +98,20 @@ function selectFunction(select)
 //resize editor height
 function resizeEditor()
 {
-  var editor_height = window.innerHeight - 200;
   var div_editor = document.getElementById('editors');
-  div_editor.setAttribute("style", "height:" + editor_height + "px; overflow-y:scroll;");
+  //on limite la hauteur de l'éditeur pour qu'il soit entièrement visible (pas d'ascensseur vertical sur le navigateur)
+  var editor_height = (window.innerHeight - 200) + 'px';
+  //si 'page' fait moins de 1242 pixels, il faut compenser l'ajout de l'ascenseur vertical au niveau de l'éditeur
+  var page = document.getElementById('page');
+  if (page.clientWidth < 1242)
+  {
+    editor_width = (page.clientWidth - 160) + 'px';
+  }
+  else
+  {
+    editor_width = 'auto'; //valeur par défaut de la propriété width
+  }
+  div_editor.setAttribute("style", "height:" + editor_height + "; width:" + editor_width + "; overflow-y:scroll;");
 }
 
 //fix bracket bug (matching brackets not selected) with LeekWars theme
@@ -109,16 +120,15 @@ GM_addStyle ( "                                     \
         border-bottom: 1px solid #080802;           \
     }                                               \
 " );
-
 //hide footer to maximize editor height
 var footer = document.getElementById('footer');
 footer.setAttribute("style", "display: none;");
-//resizing editor height and add vertical scroll
-resizeEditor();
-window.onresize=function(){ resizeEditor(); };
 
 //wait page loaded (CSS styles must be applied)
 window.addEventListener('load', function() {
+  //resizing editor height and add vertical scroll
+  resizeEditor();
+  window.onresize=function(){ resizeEditor(); };
   //creating dropdown
   var select = document.createElement("select");
   select.id = 'select-function';
@@ -126,7 +136,6 @@ window.addEventListener('load', function() {
   setDropDownStyles(select);
   select.onclick = function(){ loadDropDown(this); };
   select.onchange = function(){ selectFunction(this); };
-
   //appending dropdown
   var toolbar = document.getElementById('buttons');
   toolbar.insertBefore(select, toolbar.firstChild);
