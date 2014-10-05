@@ -3,8 +3,8 @@
 // @namespace   LeekWars.Editor
 // @description Enhance LeekWars editor
 // @include     http://leekwars.com/editor*
-// @author			Foudge
-// @version     0.2.1
+// @author      Foudge
+// @version     0.2.2
 // @grant       GM_addStyle
 // ==/UserScript==
 
@@ -174,7 +174,7 @@ function selectTextElement(element)
   }
   else if (window.getSelection)
   {
-    selection = window.getSelection();        
+    selection = window.getSelection();
     range = document.createRange();
     range.selectNodeContents(element);
     selection.addRange(range);
@@ -184,10 +184,10 @@ function selectTextElement(element)
 //unselect all
 function removeSelections()
 {
-		if (document.selection)
-      document.selection.empty();
-		else if (window.getSelection)
-      window.getSelection().removeAllRanges();
+  if (document.selection)
+    document.selection.empty();
+  else if (window.getSelection)
+    window.getSelection().removeAllRanges();
 }
 
 //fix bracket bug (matching brackets not selected) with LeekWars theme
@@ -222,6 +222,7 @@ window.addEventListener('load', function () {
   textarea.style.setProperty('margin-right', '1px', null);
   textarea.style.setProperty('overflow', 'hidden', null);
   textarea.id = 'search-text';
+  textarea.rows = 1;
   textarea.placeholder = 'Rechercher...';
   textarea.onkeydown = function (e) { if (e.keyCode == 13) { e.preventDefault(); searchText(textarea.value); } };
   //creating next-button
