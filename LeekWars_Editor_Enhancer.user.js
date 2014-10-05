@@ -4,7 +4,7 @@
 // @description Enhance LeekWars editor
 // @include     http://leekwars.com/editor*
 // @author			Foudge
-// @version     0.2.0
+// @version     0.2.1
 // @grant       GM_addStyle
 // ==/UserScript==
 
@@ -220,12 +220,16 @@ window.addEventListener('load', function () {
   textarea.style.setProperty('text-align', 'left', null);
   textarea.style.setProperty('width', '120px', null);
   textarea.style.setProperty('margin-right', '1px', null);
+  textarea.style.setProperty('overflow', 'hidden', null);
   textarea.id = 'search-text';
+  textarea.placeholder = 'Rechercher...';
+  textarea.onkeydown = function (e) { if (e.keyCode == 13) { e.preventDefault(); searchText(textarea.value); } };
   //creating next-button
-  var next_button = document.createElement('button');
+  var next_button = document.createElement('div');
   setThemeStyles(next_button);
   next_button.style.setProperty('margin-left', '1px', null);
-  next_button.style.setProperty('width', '4px', null);
+  next_button.style.setProperty('width', '14px', null);
+  next_button.style.setProperty('padding', '5px 2px', null);
   next_button.id = 'next-result-button';
   next_button.innerHTML = '\u25BC';
   next_button.onclick = function () { searchText(textarea.value); };
