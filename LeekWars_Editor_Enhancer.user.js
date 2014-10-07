@@ -4,7 +4,7 @@
 // @description Enhance LeekWars editor
 // @include     http://leekwars.com/editor*
 // @author      Foudge
-// @version     0.2.2
+// @version     0.3.0
 // @grant       GM_addStyle
 // ==/UserScript==
 
@@ -92,25 +92,6 @@ function selectFunction(select)
   }
 }
 
-//resize editor
-function resizeEditor()
-{
-  var div_editor = document.getElementById('editors');
-  //on limite la hauteur de l'éditeur pour qu'il soit entièrement visible (pas d'ascensseur vertical sur le navigateur)
-  var editor_height = (window.innerHeight - 200) + 'px';
-  //si 'page' fait moins de 1242 pixels, il faut compenser l'ajout de l'ascenseur vertical au niveau de l'éditeur
-  var page = document.getElementById('page');
-  if (page.clientWidth < 1242)
-  {
-    editor_width = (page.clientWidth - 160) + 'px';
-  } 
-  else
-  {
-    editor_width = 'auto'; //valeur par défaut de la propriété width
-  }
-  div_editor.setAttribute('style', 'height:' + editor_height + '; width:' + editor_width + '; overflow-y:scroll;');
-}
-
 //search text inside editor
 var lastEditor = null;
 var lastSearchedText = null;
@@ -190,6 +171,46 @@ function removeSelections()
     window.getSelection().removeAllRanges();
 }
 
+//resize editor
+function resizeEditor()
+{
+  var div_editors = document.getElementById('editors');
+  //on limite la hauteur de l'éditeur pour qu'il soit entièrement visible (pas d'ascensseur vertical sur le navigateur)
+  var editor_height = window.innerHeight - (isInFullSize ? 90 : 190);
+  //on rend la largeur dynamique pour profiter au maximum de la largeur disponible
+  var editor_width = document.getElementById('page').clientWidth - 160;
+  div_editors.setAttribute('style', 'height:' + editor_height + 'px; width:' + editor_width + 'px; overflow-y:scroll;');
+  getEditorElement().firstChild.style.setProperty('max-width', (editor_width - 20) + 'px', null);
+}
+
+//modify the layout to put editor in full-size
+var oldWrapperMaxWidth = null;
+var isInFullSize = false;
+function toggleFullSize()
+{
+  if (!isInFullSize)
+  {
+    isInFullSize = true;
+    document.getElementById('big-leeks').setAttribute('style', 'display: none;');
+    document.getElementById('header').setAttribute('style', 'display: none;');
+    document.getElementById('menu-wrapper').setAttribute('style', 'display: none;');
+    oldWrapperMaxWidth = document.getElementById('wrapper').style.getPropertyValue('max-width');
+    document.getElementById('wrapper').setAttribute('style', 'padding: 0px 0px; max-width: 100%; height: 100%;');
+    document.getElementById('page-wrapper').setAttribute('style', 'height: ' + (window.innerHeight - 90) + 'px;');
+    resizeEditor();
+  }
+  else
+  {
+    isInFullSize = false;
+    document.getElementById('big-leeks').removeAttribute('style');
+    document.getElementById('header').removeAttribute('style');
+    document.getElementById('menu-wrapper').removeAttribute('style');
+    document.getElementById('wrapper').setAttribute('style', 'padding: 0px 135px; max-width: ' + oldWrapperMaxWidth + ';');
+    document.getElementById('page-wrapper').removeAttribute('style');
+    resizeEditor();
+  }
+}
+
 //fix bracket bug (matching brackets not selected) with LeekWars theme
 GM_addStyle('.CodeMirror-matchingbracket {\
   border-bottom:\
@@ -221,21 +242,28 @@ window.addEventListener('load', function () {
   textarea.style.setProperty('width', '120px', null);
   textarea.style.setProperty('margin-right', '1px', null);
   textarea.style.setProperty('overflow', 'hidden', null);
+  textarea.style.setProperty('resize', 'none', null);
   textarea.id = 'search-text';
   textarea.rows = 1;
   textarea.placeholder = 'Rechercher...';
   textarea.onkeydown = function (e) { if (e.keyCode == 13) { e.preventDefault(); searchText(textarea.value); } };
   //creating next-button
   var next_button = document.createElement('div');
-  setThemeStyles(next_button);
+  next_button.className = 'button';
   next_button.style.setProperty('margin-left', '1px', null);
-  next_button.style.setProperty('width', '14px', null);
   next_button.style.setProperty('padding', '5px 2px', null);
   next_button.id = 'next-result-button';
   next_button.innerHTML = '\u25BC';
   next_button.onclick = function () { searchText(textarea.value); };
+  //creating fullswindow-button
+  var fullswindow_button = document.createElement('div');
+  fullswindow_button.className = 'button';
+  fullswindow_button.id = 'fullswindow-button';
+  fullswindow_button.innerHTML = '\u25A2';
+  fullswindow_button.onclick = function () { toggleFullSize(); };
   //appending new elements
   var toolbar = document.getElementById('buttons');
+  toolbar.insertBefore(fullswindow_button, toolbar.lastChild);
   toolbar.insertBefore(next_button, toolbar.firstChild);
   toolbar.insertBefore(textarea, toolbar.firstChild);
   toolbar.insertBefore(select, toolbar.firstChild);
