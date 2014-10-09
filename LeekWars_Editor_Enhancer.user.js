@@ -4,7 +4,7 @@
 // @description Enhance LeekWars editor
 // @include     http://leekwars.com/editor*
 // @author      Foudge
-// @version     0.3.2
+// @version     0.3.3
 // @grant       GM_addStyle
 // ==/UserScript==
 
@@ -184,7 +184,9 @@ function resizeEditor()
   //on rend la largeur dynamique pour profiter au maximum de la largeur disponible
   var editor_width = document.getElementById('page').clientWidth - 160;
   div_editors.setAttribute('style', 'height:' + editor_height + 'px; width:' + editor_width + 'px; overflow-y:scroll;');
-  getEditorElement().firstChild.style.setProperty('max-width', (editor_width - 20) + 'px', null);
+  var editor = getEditorElement();
+  if (editor != null)
+    editor.firstChild.style.setProperty('max-width', (editor_width - 20) + 'px', null);
 }
 
 //modify the layout to put editor in full-size
