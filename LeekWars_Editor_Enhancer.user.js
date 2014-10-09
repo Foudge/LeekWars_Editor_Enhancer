@@ -4,7 +4,7 @@
 // @description Enhance LeekWars editor
 // @include     http://leekwars.com/editor*
 // @author      Foudge
-// @version     0.3.3
+// @version     0.3.4
 // @grant       GM_addStyle
 // ==/UserScript==
 
@@ -174,19 +174,21 @@ function removeSelections()
 //resize editor
 function resizeEditor()
 {
+  var editors = document.getElementById('editors');
+  //on rend la largeur dynamique pour profiter au maximum de la largeur disponible
+  var editor_width = document.getElementById('page').clientWidth - 160;
+  editors.setAttribute('style', 'width:' + editor_width + 'px; overflow-y:scroll;');
+  var editor = getEditorElement();
+  if (editor != null)
+    editor.firstChild.style.setProperty('max-width', (editor_width - 20) + 'px', null);
+  //on limite la hauteur de l'éditeur pour qu'il soit entièrement visible (pas d'ascensseur vertical sur le navigateur)
   if (isInFullSize)
     document.getElementById('page-wrapper').setAttribute('style', 'height: ' + (window.innerHeight - 90) + 'px;');
   else
     document.getElementById('page-wrapper').removeAttribute('style');
-  var div_editors = document.getElementById('editors');
-  //on limite la hauteur de l'éditeur pour qu'il soit entièrement visible (pas d'ascensseur vertical sur le navigateur)
-  var editor_height = window.innerHeight - (isInFullSize ? 90 : 190);
-  //on rend la largeur dynamique pour profiter au maximum de la largeur disponible
-  var editor_width = document.getElementById('page').clientWidth - 160;
-  div_editors.setAttribute('style', 'height:' + editor_height + 'px; width:' + editor_width + 'px; overflow-y:scroll;');
-  var editor = getEditorElement();
-  if (editor != null)
-    editor.firstChild.style.setProperty('max-width', (editor_width - 20) + 'px', null);
+  var buttons_height = document.getElementById('buttons').clientHeight;
+  var editor_height = window.innerHeight - (isInFullSize ? 50 : 150) - buttons_height;
+  editors.style.setProperty('height', editor_height + 'px', null);
 }
 
 //modify the layout to put editor in full-size
@@ -226,9 +228,6 @@ footer.setAttribute('style', 'display: none;');
 
 //wait page loaded (CSS styles must be applied)
 window.addEventListener('load', function () {
-  //resizing editor height and add vertical scroll
-  resizeEditor();
-  window.onresize = function () { resizeEditor(); };
   //creating dropdown
   var select = document.createElement('select');
   setThemeStyles(select);
@@ -271,4 +270,7 @@ window.addEventListener('load', function () {
   toolbar.insertBefore(next_button, toolbar.firstChild);
   toolbar.insertBefore(textarea, toolbar.firstChild);
   toolbar.insertBefore(select, toolbar.firstChild);
+  //resizing editor height and add vertical scroll
+  resizeEditor();
+  window.onresize = function () { resizeEditor(); };
 }, false);
