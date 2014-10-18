@@ -3,8 +3,10 @@
 // @namespace   LeekWars.Editor
 // @description Enhance LeekWars editor
 // @include     http://leekwars.com/editor*
+// @downloadURL https://github.com/Foudge/LeekWars_Editor_Enhancer/raw/master/LeekWars_Editor_Enhancer.user.js
+// @updateURL   https://github.com/Foudge/LeekWars_Editor_Enhancer/raw/master/LeekWars_Editor_Enhancer.user.js
 // @author      Foudge
-// @version     0.3.4
+// @version     0.3.5
 // @grant       GM_addStyle
 // ==/UserScript==
 
@@ -101,7 +103,7 @@ function searchText(text)
 {
   var editor = getEditorElement();
   //do new search if new text or new editor
-  if (text != lastSearchedText || editor != lastEditor)
+  if (text != lastSearchedText || editor != lastEditor || (searchResults.length > 0 && !editor.contains(searchResults[currentResultIndex])))
   {
     lastEditor = editor;
     lastSearchedText = text;
